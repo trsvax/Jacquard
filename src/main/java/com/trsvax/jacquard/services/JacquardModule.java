@@ -31,7 +31,7 @@ public class JacquardModule
         binder.bind(UserContentService.class,UserContentImpl.class);
 		binder.bind(Monitor.class,MonitorOK.class).withId("MonitorOK");
 		binder.bind(MultiStatePersistenceStrategy.class,MultiStatePersistenceStrategyImpl.class);
-		binder.bind(MultiLinkHub.class).eagerLoad();
+		binder.bind(MultiLinkHub.class);
     }
     		
    public void contributeMarkupRenderer(OrderedConfiguration<MarkupRendererFilter> configuration,

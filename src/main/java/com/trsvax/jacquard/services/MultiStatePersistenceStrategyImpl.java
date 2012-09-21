@@ -88,7 +88,7 @@ public class MultiStatePersistenceStrategyImpl implements MultiStatePersistenceS
 
 	String key(String componentId, String fieldName) {
 		if ( componentId == null ) {
-			return fieldName;
+			componentId = "";
 		}
 		return String.format("%s;%s",componentId,fieldName);
 	}
@@ -98,11 +98,17 @@ public class MultiStatePersistenceStrategyImpl implements MultiStatePersistenceS
 		if ( request.getAttribute(key) == null ) {
 			Map<String,String> map = new HashMap<String, String>();
 			request.setAttribute(key, map);
-			for ( String name : request.getParameterNames() ) {
-				if ( name.startsWith("t:")) {
-					continue;
+			
+			if ( ! request.getMethod().equals("POST")) {
+				for ( String name : request.getParameterNames() ) {
+					if ( name.startsWith("t:")) {
+						continue;
+					}
+					if ( ! name.contains(";")) {
+						continue;
+					}
+					map.put(name, request.getParameter(name));
 				}
-				map.put(name, request.getParameter(name));
 			}
 		}
 		return (Map<String, String>) request.getAttribute(key);
@@ -159,7 +165,6 @@ public class MultiStatePersistenceStrategyImpl implements MultiStatePersistenceS
 		} catch (Exception e) {
 			throw new RuntimeException(e.getMessage());
 		}	
-
 	}
 	
 }

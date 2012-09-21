@@ -18,7 +18,7 @@ public class PropertyCell {
 	
 	@BeginRender
 	void beginRender(MarkupWriter writer) {
-		if ( environment.includeCellDatatypes() ) {
+		if ( environment.includeCellDatatypes() && model.getConduit() != null ) {
 			writer.getElement().addClassName(
 					model.getDataType() == null ? model.getConduit().getPropertyType().getSimpleName() : model.getDataType());		
 		}
