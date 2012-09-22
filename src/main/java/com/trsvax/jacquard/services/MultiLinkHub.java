@@ -9,9 +9,9 @@ import org.apache.tapestry5.services.PageRenderRequestParameters;
 
 @EagerLoad
 public class MultiLinkHub implements LinkCreationListener2 {
-	private final MultiStatePersistenceStrategy strategy;
+	private final URLStatePersistenceStrategy strategy;
 	
-	public MultiLinkHub(MultiStatePersistenceStrategy strategy, LinkCreationHub hub) {
+	public MultiLinkHub(URLStatePersistenceStrategy strategy, LinkCreationHub hub) {
 		this.strategy = strategy;
 		hub.addListener(this);
 	}

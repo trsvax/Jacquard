@@ -26,11 +26,12 @@ public class JacquardModule
 {
     public static void bind(ServiceBinder binder) {
 		binder.bind(BindingFactory.class,PagerBindingFactory.class).withId("PagerBindingFactory");
+		binder.bind(BindingFactory.class,CellBindingFactory.class).withId("CellBindingFactory");
 		binder.bind(InitOnce.class,InitOnceImpl.class);
 		binder.bind(EnvSetup.class, EnvSetupImpl.class);
         binder.bind(UserContentService.class,UserContentImpl.class);
 		binder.bind(Monitor.class,MonitorOK.class).withId("MonitorOK");
-		binder.bind(MultiStatePersistenceStrategy.class,MultiStatePersistenceStrategyImpl.class);
+		binder.bind(URLStatePersistenceStrategy.class,URLStatePersistenceStrategyImpl.class);
 		binder.bind(MultiLinkHub.class);
     }
     		
@@ -59,8 +60,8 @@ public class JacquardModule
    
    public void contributePersistentFieldManager(MappedConfiguration<String, PersistentFieldStrategy> configuration,
 		   LinkCreationHub linkCreationHub,
-		   MultiStatePersistenceStrategy strategy) {
-	   configuration.add("multi",strategy);
+		   URLStatePersistenceStrategy strategy) {
+	   configuration.add("url",strategy);
    }
     
     
@@ -71,9 +72,11 @@ public class JacquardModule
 	}
 	
 	public static void contributeBindingSource(MappedConfiguration<String, BindingFactory> configuration,
-    		@InjectService("PagerBindingFactory")
-    		BindingFactory pagerBindingFactory) {
+    		@InjectService("PagerBindingFactory") BindingFactory pagerBindingFactory,
+    		@InjectService("CellBindingFactory") BindingFactory cellBindingFactory
+    		) {
         configuration.add("paged", pagerBindingFactory);
+        configuration.add("cell",cellBindingFactory);
 
     }
 	
