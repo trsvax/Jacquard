@@ -7,18 +7,15 @@ public class GridCellEnvironmentImpl implements GridCellEnviroment {
 	private final PropertyModel model;
 	
 	public GridCellEnvironmentImpl(Object object, PropertyModel model) {
+		assert(model != null);
 		this.object = object;
 		this.model = model;
 		
 	}
 
 	@Override
-	public Object value() {
-		if ( model.getConduit() != null ) {
-			return model.getConduit().get(object);
-		} else {
-			return null;
-		}
+	public Object object() {
+		return object;
 	}
 
 	@Override

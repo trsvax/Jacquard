@@ -1,0 +1,13 @@
+<div xml:space="default" xmlns:t="http://tapestry.apache.org/schema/tapestry_5_0_0.xsd">
+  
+   <t:block id="datetime">
+    <t:label for="datetime"/>
+    <t:textField t:id="datetime" />
+  </t:block>
+  
+     <t:block id="html">
+    <t:label for="html"/>
+    <t:textArea t:id="html" />
+  </t:block>
+  
+</div>
