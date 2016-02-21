@@ -1,4 +1,4 @@
-Jacquard
+tapestry-librarybinder
 ======================
 
-TODO: document
+Binds all methods in an interface to Tapestry services

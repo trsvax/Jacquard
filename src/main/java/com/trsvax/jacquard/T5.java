@@ -219,7 +219,7 @@ public interface T5 {
 	 * Used when accessing the private instance variables of a component instance.
 	 * @see FieldAccess
 	 */
-	public FieldAccess fieldAccess();
+	//public FieldAccess fieldAccess();
 	/**
 	 * For a particular field, generates the default FieldTranslator for the field.
 	 * @see FieldTranslatorSource
@@ -469,12 +469,12 @@ public interface T5 {
 	 * A field defined by (or created within) a ClassTransformation, allowing the details of the field to be accessed or modified.
 	 * @see TransformField
 	 */
-	public TransformField transformField();
+	//public TransformField transformField();
 	/**
 	 * A method defined by (or created within) a ClassTransformation, allowing for access and manipulation of the method.
 	 * @see TransformMethod
 	 */
-	public TransformMethod transformMethod();
+	//public TransformMethod transformMethod();
 	/**
 	 * This service is used by TranslatorSource to specify Translator alternates: 
 	 * translators that are used when specified explicitly by name.
