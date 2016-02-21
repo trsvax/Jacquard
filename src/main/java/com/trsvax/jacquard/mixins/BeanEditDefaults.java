@@ -52,12 +52,14 @@ public class BeanEditDefaults {
 		Class<Object> beantype = resources.getContainerResources().getBoundType("object");
 		BeanEditEnviromentInterface enviromentType = (BeanEditEnviromentInterface) beantype.getAnnotation(BeanEditEnviromentInterface.class);
 		if (enviromentType != null) {
+			/*
 			BeanEditEnvironment defaults = environment.peek(enviromentType.value());
 			if (defaults != null) {
 				if (reorder == null) {
 					reorder = defaults.getOrder();
 				}
 			}
+			*/
 		}
 
 	}
