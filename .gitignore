@@ -5,6 +5,7 @@ test-output/
 .classpath
 temp-testng-customsuite.xml
 target/
+build/
 *.tmp_*
 tidyErrors.txt
 *.origin
