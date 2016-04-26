@@ -1,3 +1,4 @@
-*** Tapestry Jacquard Module
+***
+Tapestry Jacquard Module
 
 Automated Tapestry development
