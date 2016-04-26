@@ -1,0 +1,15 @@
+<html lang="en" t:type="layout"
+      xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+      xmlns:p="tapestry:parameter">
+      
+      <h1>Date</h1>
+      
+      ${date}
+
+<t:form>
+	<t:textField value="date" />
+	<t:textField value="calendar"/>
+	<input type="submit"/>
+</t:form>
+
+</html>

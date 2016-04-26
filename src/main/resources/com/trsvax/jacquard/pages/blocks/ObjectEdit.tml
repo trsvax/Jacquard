@@ -1,0 +1,8 @@
+<div xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd">
+
+
+<t:block id="Object">
+	<t:beanEditor object="context.propertyValue" model="model"/>
+</t:block>
+
+</div>

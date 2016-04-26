@@ -1,83 +1,134 @@
 package com.trsvax.jacquard.services;
 
-import org.apache.tapestry5.MarkupWriter;
+import java.util.Calendar;
+import java.util.Date;
+
+import org.apache.tapestry5.Translator;
+import org.apache.tapestry5.ValueEncoder;
+import org.apache.tapestry5.annotations.Path;
 import org.apache.tapestry5.ioc.Configuration;
 import org.apache.tapestry5.ioc.MappedConfiguration;
 import org.apache.tapestry5.ioc.OrderedConfiguration;
+import org.apache.tapestry5.ioc.Resource;
 import org.apache.tapestry5.ioc.ServiceBinder;
+import org.apache.tapestry5.ioc.annotations.Autobuild;
 import org.apache.tapestry5.ioc.annotations.Contribute;
-import org.apache.tapestry5.ioc.annotations.InjectService;
+import org.apache.tapestry5.ioc.services.SymbolSource;
+import org.apache.tapestry5.services.AssetSource;
 import org.apache.tapestry5.services.BindingFactory;
-import org.apache.tapestry5.services.Environment;
 import org.apache.tapestry5.services.LibraryMapping;
-import org.apache.tapestry5.services.LinkCreationHub;
-import org.apache.tapestry5.services.LinkCreationListener;
-import org.apache.tapestry5.services.MarkupRenderer;
-import org.apache.tapestry5.services.MarkupRendererFilter;
-import org.apache.tapestry5.services.PersistentFieldStrategy;
-import org.apache.tapestry5.services.javascript.JavaScriptSupport;
+import org.apache.tapestry5.services.TranslatorSource;
+import org.apache.tapestry5.services.ValueEncoderFactory;
+import org.apache.tapestry5.services.javascript.ExtensibleJavaScriptStack;
+import org.apache.tapestry5.services.javascript.JavaScriptModuleConfiguration;
+import org.apache.tapestry5.services.javascript.JavaScriptStack;
+import org.apache.tapestry5.services.javascript.JavaScriptStackSource;
+import org.apache.tapestry5.services.javascript.ModuleManager;
+import org.apache.tapestry5.services.javascript.StackExtension;
 import org.apache.tapestry5.services.transform.ComponentClassTransformWorker2;
+import org.apache.tapestry5.services.transform.InjectionProvider2;
 
-/**
- * This module is automatically included as part of the Tapestry IoC Registry, it's a good place to
- * configure and extend Tapestry, or to place your own service definitions.
- */
-public class JacquardModule
-{
-    public static void bind(ServiceBinder binder) {
-		binder.bind(BindingFactory.class,PagerBindingFactory.class).withId("PagerBindingFactory");
-		binder.bind(InitOnce.class,InitOnceImpl.class);
-		binder.bind(EnvSetup.class, EnvSetupImpl.class);
-        binder.bind(UserContentService.class,UserContentImpl.class);
-		binder.bind(Monitor.class,MonitorOK.class).withId("MonitorOK");
-		binder.bind(MultiStatePersistenceStrategy.class,MultiStatePersistenceStrategyImpl.class);
-		binder.bind(MultiLinkHub.class).eagerLoad();
-    }
-    		
-   public void contributeMarkupRenderer(OrderedConfiguration<MarkupRendererFilter> configuration,
-			final EnvSetup environmentSetup, final Environment environment, final InitOnce initOnce) {
+import com.trsvax.jacquard.anotations.JacquardJavaScriptStack;
+import com.trsvax.jacquard.services.translators.DateTranslator;
+import com.trsvax.jacquard.services.worker.JSR303PassivateWorker;
+import com.trsvax.jacquard.services.worker.JSR303Worker;
 
-		MarkupRendererFilter environmentFilter = new MarkupRendererFilter() {		
-			public void renderMarkup(MarkupWriter writer, MarkupRenderer renderer) {
-				environmentSetup.push();
-				renderer.renderMarkup(writer);				
-				environmentSetup.pop();
-			}		
-		};
-		MarkupRendererFilter initOnceFilter = new MarkupRendererFilter() {		
-			public void renderMarkup(MarkupWriter writer, MarkupRenderer renderer) {
-				renderer.renderMarkup(writer);				
-				JavaScriptSupport javaScriptSupport = environment.peekRequired(JavaScriptSupport.class);
-				for ( String script : initOnce.getScripts() ) {
-					javaScriptSupport.addScript(script);
-				}
-			}		
-		};
-		configuration.add("EnvironmentFilter", environmentFilter,"after:JavaScriptSupport");
-		configuration.add("InitOnceFilter", initOnceFilter,"after:JavaScriptSupport");
-	}
-   
-   public void contributePersistentFieldManager(MappedConfiguration<String, PersistentFieldStrategy> configuration,
-		   LinkCreationHub linkCreationHub,
-		   MultiStatePersistenceStrategy strategy) {
-	   configuration.add("multi",strategy);
-   }
-    
-    
-	@Contribute(ComponentClassTransformWorker2.class)   
-	public static void  provideWorkers(OrderedConfiguration<ComponentClassTransformWorker2> workers) {	
-		workers.addInstance("AddMixinWorker", AddMixinWorker.class);
-		workers.addInstance("JQuerySubscribeWorker", JQuerySubscribeWorker.class);
-	}
+public class JacquardModule {
 	
-	public static void contributeBindingSource(MappedConfiguration<String, BindingFactory> configuration,
-    		@InjectService("PagerBindingFactory")
-    		BindingFactory pagerBindingFactory) {
-        configuration.add("paged", pagerBindingFactory);
+    @SuppressWarnings("unchecked")
+	public static void bind(ServiceBinder binder) {
+        binder.bind(JavaScriptStack.class, ExtensibleJavaScriptStack.class).withMarker(JacquardJavaScriptStack.class).withId("JacquardJavaScriptStack");
+    	binder.bind(WebService.class,WebServiceImpl.class);
 
     }
-	
+    
 	public static void contributeComponentClassResolver(Configuration<LibraryMapping> configuration) {
-		configuration.add(new LibraryMapping("tj", "com.trsvax.jacquard"));
+		configuration.add(new LibraryMapping("jq", "com.trsvax.jacquard"));
 	}
+	
+	public static void contributeBindingSource(
+			MappedConfiguration<String, BindingFactory> configuration) {
+		configuration.addInstance("page", PageBindingFactory.class);
+
+	}
+	
+	@Contribute(TranslatorSource.class)
+	public static void contributeTranslatorSource(
+			@SuppressWarnings("rawtypes") MappedConfiguration<Class, Translator> configuration,
+			@Autobuild DateTranslator.Builder builder){
+		
+		DateTranslator dateTranslator = builder.setName("Date").setType(Date.class).build();	
+		configuration.add(dateTranslator.getType(), dateTranslator.addAttribute("placeholder", "mm/dd/yyyy"));
+		
+		DateTranslator calendarTranslator = builder.setType(Calendar.class).setName("calendar").build();
+		configuration.add(calendarTranslator.getType(),calendarTranslator);
+	
+	}
+	
+    @Contribute(ModuleManager.class)
+    public static void setupModules(MappedConfiguration<String, Object> configuration,
+                                        @Path("/META-INF/resources/webjars/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.min.js")
+                                        Resource datepicker) {
+    	configuration.add("webjars/datepicker", new JavaScriptModuleConfiguration(datepicker));
+    }
+    
+    @Contribute(JavaScriptStack.class)
+    @JacquardJavaScriptStack
+    public static void setupCoreJavaScriptStack(OrderedConfiguration<StackExtension> configuration) {
+    		configuration.add("webjars/datepicker", StackExtension.module("webjars/datepicker"));
+    		configuration.add("webjars/datepickercss",StackExtension.stylesheet("/META-INF/resources/webjars/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker3.css"));
+    	
+    }
+    
+    @Contribute(JavaScriptStackSource.class)
+    public static void provideBuiltinJavaScriptStacks(MappedConfiguration<String, JavaScriptStack> configuration,
+                                                      @JacquardJavaScriptStack JavaScriptStack jacquardJavaScriptStack)
+    {
+        configuration.add("JacquardJavaScriptStack", jacquardJavaScriptStack);
+    }
+    
+    
+    
+    public static void contributeValueEncoderSource(
+            MappedConfiguration<Class<?>, ValueEncoderFactory<?>> configuration)
+    {
+        configuration.add(Date.class, new ValueEncoderFactory<Date>() {
+
+			@Override
+			public ValueEncoder<Date> create(Class<Date> type) {
+				return new ValueEncoder<Date>() {
+
+					@Override
+					public String toClient(Date value) {
+						return String.valueOf(value.getTime());
+					}
+
+					@Override
+					public Date toValue(String clientValue) {
+						return new Date(new Long(clientValue));
+					}
+				};
+			}
+		});
+        
+		
+    }
+    
+ 
+    
+	@Contribute(ComponentClassTransformWorker2.class)
+	public static void provideCommitAfterAnnotationSupport(OrderedConfiguration<ComponentClassTransformWorker2> configuration) {
+			configuration.addInstance("JSR303Worker", JSR303Worker.class, "after:*");
+			configuration.addInstance("JSR303PassivateWorker", JSR303PassivateWorker.class, "before:PageActivationContext");
+	}
+	
+   @Contribute(InjectionProvider2.class)
+    public static void provideStandardInjectionProviders(OrderedConfiguration<InjectionProvider2> configuration, 
+    		SymbolSource symbolSource, AssetSource assetSource)
+    {
+        configuration.addInstance("Page", PageInjectionProvider.class);
+ 
+    }
+
+
 }

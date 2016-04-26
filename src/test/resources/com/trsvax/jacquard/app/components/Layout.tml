@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+      xmlns:p="tapestry:parameter">
+      <head>
+      <title>Date</title>
+      </head>
+	<body >
+
+		<div class="container" id="layoutContainer">       
+			<t:body/>
+		</div>
+
+	</body>
+</html>
