@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en" t:type="layout"
+      xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+      xmlns:p="tapestry:parameter">
+Page view
+
+<t:grid source="logs">
+
+</t:grid>
+
+</html>

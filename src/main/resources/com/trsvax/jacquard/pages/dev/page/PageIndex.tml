@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en" t:type="layout"
+      xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+      xmlns:p="tapestry:parameter">
+Pages
+
+<t:grid source="pages" row="page" add="view" rowsPerPage="150">
+<p:viewCell>
+	<t:pagelink page="jq/dev/page/view" context="page.sequence"  >view</t:pagelink>
+</p:viewCell>
+</t:grid>
+
+</html>
