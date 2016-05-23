@@ -1,63 +1,75 @@
 package com.trsvax.jacquard.mixins;
 
-import javax.validation.Validation;
-import javax.validation.ValidatorFactory;
+import java.util.Set;
 
-import org.apache.tapestry5.ComponentResources;
+import javax.validation.ConstraintViolationException;
+
 import org.apache.tapestry5.annotations.AfterRender;
 import org.apache.tapestry5.annotations.AfterRenderBody;
 import org.apache.tapestry5.annotations.AfterRenderTemplate;
 import org.apache.tapestry5.annotations.BeforeRenderTemplate;
 import org.apache.tapestry5.annotations.BeginRender;
 import org.apache.tapestry5.annotations.CleanupRender;
+import org.apache.tapestry5.annotations.InjectContainer;
 import org.apache.tapestry5.annotations.SetupRender;
+import org.apache.tapestry5.beanvalidator.BeanValidatorSource;
 import org.apache.tapestry5.ioc.annotations.Inject;
 
 public class RenderValidator {
 	
-	final ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 	
 	@Inject
-	ComponentResources componentResources;
+	BeanValidatorSource beanValidatorSource;
+	
+	@InjectContainer
+	Object container;
+	
+	@SuppressWarnings("rawtypes")
+	Set constraintViolations;
+	
+	@SuppressWarnings({"unchecked" })
+	private void validate(Class<?> group) {
+		constraintViolations = beanValidatorSource.getValidatorFactory().getValidator().validate(container,group);
+		if ( constraintViolations.size() > 0 ) {
+			throw new ConstraintViolationException(String.format("Validate %s Event Failed",group.getSimpleName()),constraintViolations);
+		}
+	}
 
 	@SetupRender
 	void setupRender() {
-		factory.getValidator().validate(componentResources.getContainer(),SetupRender.class);
+		validate(SetupRender.class);
 	}
 	
 	@BeginRender
 	void beginRender() {
-		factory.getValidator().validate(componentResources.getContainer(),BeginRender.class);
-
+		validate(BeginRender.class);
 	}
 	
 	@BeforeRenderTemplate
 	void beforeRenderTemplate() {
-		factory.getValidator().validate(componentResources.getContainer(),BeforeRenderTemplate.class);
-
+		validate(BeforeRenderTemplate.class);
 	}
 	
 	@AfterRenderBody
 	void afterRenderBody() {
-		factory.getValidator().validate(componentResources.getContainer(),AfterRenderBody.class);
+		validate(AfterRenderBody.class);
 
 	}
 	
 	@AfterRenderTemplate
 	void afterRenderTemplate() {
-		factory.getValidator().validate(componentResources.getContainer(),AfterRenderTemplate.class);
+		validate(AfterRenderTemplate.class);
 
 	}
-	
-	
+		
 	@AfterRender
 	void afterRender() {
-		factory.getValidator().validate(componentResources.getContainer(),AfterRender.class);
+		validate(AfterRender.class);
 	}
 	
 	@CleanupRender
 	void cleanupRender() {
-		factory.getValidator().validate(componentResources.getContainer(),CleanupRender.class);
+		validate(CleanupRender.class);
 	}
 
 }

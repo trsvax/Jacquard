@@ -4,7 +4,7 @@ import java.util.Map;
 
 public class DateTranslatorImpl implements DateTranslatorEnv { 
 	
-	private String moduleName; 
+	private String stackName; 
 	private String formatString;
 	private String typeOverride;
 	private Map<String,String> attributes;
@@ -15,8 +15,8 @@ public class DateTranslatorImpl implements DateTranslatorEnv {
 	}
 
 	@Override
-	public void setStackName(String moduleName) {
-		this.moduleName = moduleName;
+	public void setStackName(String stackName) {
+		this.stackName = stackName;
 	}
 	
 	@Override
@@ -33,8 +33,8 @@ public class DateTranslatorImpl implements DateTranslatorEnv {
 		return formatString;
 	}
 	
-	public String getModuleName() {
-		return moduleName;
+	public String getStackName() {
+		return stackName;
 	}
 	
 	public String getTypeOverride() {

@@ -19,15 +19,15 @@ import org.apache.tapestry5.dom.Element;
 public class BeanEditTemplate {
 	
 	@Parameter
-	private Block template;
+	Block template;
 	
-	private MarkupWriterListener listener;	
-	private Element container;
-	private Element form;	
-	private List<Element> properties;
-	private List<Element> templates;
-	private Element firstFormGroup;
-	private Map<String,Element> formGroups;
+	MarkupWriterListener listener;	
+	Element container;
+	Element form;	
+	List<Element> properties;
+	List<Element> templates;
+	Element firstFormGroup;
+	Map<String,Element> formGroups;
 	
 	@BeginRender
 	void beginRender(MarkupWriter writer) {

@@ -142,16 +142,16 @@ public class DateTranslator implements Translator<Object> {
 		}
 		
 		JavaScriptSupport javaScriptSupport = environment.peek(JavaScriptSupport.class);
-		if ( javaScriptSupport != null && getModuleName() != null ) {
-			javaScriptSupport.require(getModuleName());
+		if ( javaScriptSupport != null && getStackName() != null ) {
+			javaScriptSupport.importStack(getStackName());
 		}
 		
 	}
 	
-	private String getModuleName() {
+	private String getStackName() {
 		DateTranslatorEnv dateTranslator = getEnvironment();
-		if ( dateTranslator != null && dateTranslator.getModuleName() != null ) {
-			return dateTranslator.getModuleName();
+		if ( dateTranslator != null && dateTranslator.getStackName() != null ) {
+			return dateTranslator.getStackName();
 		}
 		return moduleName;
 	}

@@ -10,10 +10,10 @@ import org.apache.tapestry5.services.PropertyEditContext;
 public class ObjectEdit {
 	@Property
 	@Environmental
-	private PropertyEditContext context;
+	PropertyEditContext context;
 	
 	@Inject
-	private BeanModelSource beanModelSource;
+	BeanModelSource beanModelSource;
 	
 	@SuppressWarnings("unchecked")
 	public BeanModel<?> getModel() {

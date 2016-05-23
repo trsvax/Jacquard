@@ -37,6 +37,7 @@ public class JSR303PassivateWorker implements ComponentClassTransformWorker2 {
 			
 			support.addEventHandler(EventConstants.PASSIVATE, 0, "Validate Passivate Event", new ComponentEventHandler() {
 				
+				@SuppressWarnings({ "rawtypes", "unchecked" })
 				@Override
 				public void handleEvent(Component instance, ComponentEvent event) {					
 					Set constraintViolations = factory.getValidator().validate(instance, 

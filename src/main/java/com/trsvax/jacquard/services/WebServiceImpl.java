@@ -2,17 +2,22 @@ package com.trsvax.jacquard.services;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Scanner;
 
+import org.apache.tapestry5.Link;
+import org.apache.tapestry5.services.PageRenderLinkSource;
 import org.slf4j.Logger;
 
 public class WebServiceImpl implements WebService {
 	
 	private final Logger logger;
+	private final PageRenderLinkSource linkSource;
 	
-	public WebServiceImpl(Logger logger) {
+	public WebServiceImpl(Logger logger , 	PageRenderLinkSource linkSource) {
 		this.logger = logger;
+		this.linkSource = linkSource;
 	}
 
 	@Override
@@ -40,6 +45,21 @@ public class WebServiceImpl implements WebService {
 		} finally {
 			scanner.close();
 		}
+	}
+
+	@Override
+	public String content(String url) {
+		try {
+			return content(new URL(url));
+		} catch (MalformedURLException e) {
+			throw new RuntimeException(e.getMessage());
+		}
+	}
+
+	@Override
+	public String content(Class<?> pageClass) {
+		Link link = linkSource.createPageRenderLink(pageClass);
+		return content(link.toAbsoluteURI());
 	}
 
 }

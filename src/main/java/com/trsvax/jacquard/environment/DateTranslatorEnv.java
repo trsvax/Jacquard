@@ -16,7 +16,7 @@ public interface DateTranslatorEnv {
 	public void setAttributes(Map<String,String> attributes);
 	
 	public String getFormatString();
-	public String getModuleName();
+	public String getStackName();
 	public String getTypeOverride();
 	public Map<String,String> getAttributes();
 }

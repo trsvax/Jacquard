@@ -1,5 +1,6 @@
 package com.trsvax.jacquard.services;
 
+import java.io.IOException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -13,10 +14,14 @@ import org.apache.tapestry5.ioc.Resource;
 import org.apache.tapestry5.ioc.ServiceBinder;
 import org.apache.tapestry5.ioc.annotations.Autobuild;
 import org.apache.tapestry5.ioc.annotations.Contribute;
-import org.apache.tapestry5.ioc.services.SymbolSource;
-import org.apache.tapestry5.services.AssetSource;
+import org.apache.tapestry5.ioc.annotations.Local;
 import org.apache.tapestry5.services.BindingFactory;
+import org.apache.tapestry5.services.ComponentRequestFilter;
 import org.apache.tapestry5.services.LibraryMapping;
+import org.apache.tapestry5.services.Request;
+import org.apache.tapestry5.services.RequestFilter;
+import org.apache.tapestry5.services.RequestHandler;
+import org.apache.tapestry5.services.Response;
 import org.apache.tapestry5.services.TranslatorSource;
 import org.apache.tapestry5.services.ValueEncoderFactory;
 import org.apache.tapestry5.services.javascript.ExtensibleJavaScriptStack;
@@ -27,7 +32,10 @@ import org.apache.tapestry5.services.javascript.ModuleManager;
 import org.apache.tapestry5.services.javascript.StackExtension;
 import org.apache.tapestry5.services.transform.ComponentClassTransformWorker2;
 import org.apache.tapestry5.services.transform.InjectionProvider2;
+import org.slf4j.MDC;
 
+import com.trsvax.jacquard.JacquardSymbols;
+import com.trsvax.jacquard.Page;
 import com.trsvax.jacquard.anotations.JacquardJavaScriptStack;
 import com.trsvax.jacquard.services.translators.DateTranslator;
 import com.trsvax.jacquard.services.worker.JSR303PassivateWorker;
@@ -39,7 +47,14 @@ public class JacquardModule {
 	public static void bind(ServiceBinder binder) {
         binder.bind(JavaScriptStack.class, ExtensibleJavaScriptStack.class).withMarker(JacquardJavaScriptStack.class).withId("JacquardJavaScriptStack");
     	binder.bind(WebService.class,WebServiceImpl.class);
-
+    	binder.bind(JobRunner.class,JobRunnerTapestry.class);
+    	binder.bind(LogWatcher.class,Log4jWatcher.class);
+    	binder.bind(PageService.class,PageServiceImp.class);
+    }
+    
+    public static void contributeApplicationDefaults(MappedConfiguration<String,String> configuration) {
+      configuration.add(JacquardSymbols.JOBPACKAGE, "");
+      configuration.add(JacquardSymbols.JOBURL, "");
     }
     
 	public static void contributeComponentClassResolver(Configuration<LibraryMapping> configuration) {
@@ -75,6 +90,7 @@ public class JacquardModule {
     @Contribute(JavaScriptStack.class)
     @JacquardJavaScriptStack
     public static void setupCoreJavaScriptStack(OrderedConfiguration<StackExtension> configuration) {
+    		configuration.add("jq/validator/DateRange", StackExtension.module("jq/validator/DateRange"));
     		configuration.add("webjars/datepicker", StackExtension.module("webjars/datepicker"));
     		configuration.add("webjars/datepickercss",StackExtension.stylesheet("/META-INF/resources/webjars/bootstrap-datepicker/1.5.0/css/bootstrap-datepicker3.css"));
     	
@@ -123,12 +139,42 @@ public class JacquardModule {
 	}
 	
    @Contribute(InjectionProvider2.class)
-    public static void provideStandardInjectionProviders(OrderedConfiguration<InjectionProvider2> configuration, 
-    		SymbolSource symbolSource, AssetSource assetSource)
+    public static void provideStandardInjectionProviders(OrderedConfiguration<InjectionProvider2> configuration)
     {
-        configuration.addInstance("Page", PageInjectionProvider.class);
+        configuration.addInstance("Page", PageInjectionProvider.class, "before:*");
  
     }
+   
 
+   public void contributeComponentRequestHandler(OrderedConfiguration<ComponentRequestFilter> configuration) {
+       configuration.addInstance("JobTrackerFilter", JobTracker.class);
+   }
+   
+   public RequestFilter buildTimingFilter(final PageService pageService)
+   {
+       return new RequestFilter()
+       {
+           public boolean service(Request request, Response response, RequestHandler handler)
+           throws IOException
+           {
+        	   Page page = pageService.newPage(request);
+        	   request.setAttribute("Page", page);
+        	   MDC.put("page", page.getSequence().toString());
+
+               try
+               {
+                   return handler.service(request, response);
+               } finally {
+                   page.setEnd(System.currentTimeMillis());
+               }
+           }
+       };
+   }
+   
+	@Contribute(RequestHandler.class)
+	public void addTimingFilter(OrderedConfiguration<RequestFilter> configuration,
+         @Local RequestFilter filter) {   
+            configuration.add("Timing", filter);
+        }
 
 }

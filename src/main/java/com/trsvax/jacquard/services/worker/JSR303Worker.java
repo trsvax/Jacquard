@@ -51,6 +51,7 @@ public class JSR303Worker implements ComponentClassTransformWorker2 {
 						
 			support.addEventHandler(EventConstants.ACTIVATE, 0, "Validate Activation Event", new ComponentEventHandler() {
 				
+				@SuppressWarnings({ "rawtypes", "unchecked" })
 				@Override
 				public void handleEvent(Component instance, ComponentEvent event) {
 						
@@ -68,6 +69,7 @@ public class JSR303Worker implements ComponentClassTransformWorker2 {
 		
 		support.addEventHandler(EventConstants.SUCCESS, 0, "Form Validate", new ComponentEventHandler() {
 			
+			@SuppressWarnings({ "rawtypes", "unchecked" })
 			@Override
 			public void handleEvent(Component instance, ComponentEvent event) {
 				
