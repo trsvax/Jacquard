@@ -29,7 +29,6 @@ import org.apache.tapestry5.ioc.annotations.Inject;
 import org.apache.tapestry5.json.JSONArray;
 import org.apache.tapestry5.json.JSONObject;
 
-@MixinAfter
 public class FormValidate {
 	
 	@BindParameter

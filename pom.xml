@@ -22,6 +22,12 @@
 			<artifactId>tapestry-beanvalidator</artifactId>
 			<version>${tapestry-release-version}</version>
 		</dependency>
+		
+				<dependency>
+			<groupId>org.tynamo</groupId>
+			<artifactId>tapestry-security</artifactId>
+			<version>0.6.4</version>
+		</dependency>
 
 <!--  
 		<dependency>

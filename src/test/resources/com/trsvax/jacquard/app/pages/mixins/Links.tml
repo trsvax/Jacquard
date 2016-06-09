@@ -1,0 +1,17 @@
+<html lang="en" t:type="layout"
+      xmlns:t="http://tapestry.apache.org/schema/tapestry_5_3.xsd"
+      xmlns:p="tapestry:parameter">
+      
+<t:pagelink page="mixins/links">PermissionedMixin1</t:pagelink><br/>
+<t:pagelink page="mixins/RequiresRole" t:mixins="jq/PermissionedPageLink">Requires Role</t:pagelink><br/>
+<t:pagelink page="mixins/RequiresPermission" t:mixins="jq/PermissionedPageLink">Requires Permission</t:pagelink><br/>
+
+<t:eventLink event="public" t:mixins="jq/PermissionedEventLink">Public Event</t:eventLink><br/>
+<t:eventLink event="role" t:mixins="jq/PermissionedEventLink">Role Event</t:eventLink>
+<t:eventLink event="permission" t:mixins="jq/PermissionedEventLink">Permission Event</t:eventLink>
+
+
+
+
+
+</html>
